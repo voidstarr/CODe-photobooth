@@ -11,3 +11,7 @@ base project
 https://github.com/maduck/photobooth
 
 [modifications](MODIFICATIONS.md)
+
+circuit layout
+--------------
+![fritzing diagram](https://i.imgur.com/k6NtYLG.png "yeah")
