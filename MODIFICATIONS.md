@@ -8,3 +8,5 @@ edits to settings.cfg:
 * `LED_PIN = 23`
 
 comment out lines: `28, 263`
+
+![2 button circuit layout](https://i.imgur.com/DLzYnfP.png "yeah")
