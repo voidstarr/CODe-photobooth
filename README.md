@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CODe Photobooth Project
 =======================
 
