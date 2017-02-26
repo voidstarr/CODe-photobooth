@@ -10,5 +10,5 @@ comment out lines: `28, 263`
 
 notes:
 
-    *pull down resistor circuit https://www.raspberrypi.org/learning/physical-computing-guide/pull_up_down/
-    *http://pi4j.com/pins/model-3b-rev1.html
+    * pull down resistor circuit https://www.raspberrypi.org/learning/physical-computing-guide/pull_up_down/
+    * http://pi4j.com/pins/model-3b-rev1.html
