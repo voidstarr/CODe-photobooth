@@ -9,4 +9,7 @@ edits to settings.cfg:
 
 comment out lines: `28, 263`
 
+modified ciruit layout
+----------------------
+
 ![2 button circuit layout](https://i.imgur.com/DLzYnfP.png "yeah")
