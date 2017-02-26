@@ -25,7 +25,7 @@ class PhotoboothApp(object):
         self.font = None
         self._init_camera()
         self.photos = []
-        self.printer = backends.acquire_backend("output", "line_printer", self.config)
+        #self.printer = backends.acquire_backend("output", "line_printer", self.config)
         self._init_gpio()
         self._get_last_runtime_id()
         self.get_current_photo_directory()
@@ -87,7 +87,7 @@ class PhotoboothApp(object):
         self.camera = picamera.PiCamera()
         self.camera.annotate_text_size = 128
         self.camera.led = False
-        self.camera.vflip = True
+        self.camera.vflip = False
         self.camera.resolution = (self.config.getint("picture_width"), self.config.getint("picture_height"))
 
     def enable_led(self, mode):
@@ -260,7 +260,7 @@ class PhotoboothApp(object):
         pygame.display.flip()
         photo_filename = self.generate_photo_filename()
         self.render_and_save_printer_photo(photo_filename)
-        self.printer.export(photo_filename)
+        #self.printer.export(photo_filename)
         self.photos = []
 
         time.sleep(10)
