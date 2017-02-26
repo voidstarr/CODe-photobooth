@@ -3,6 +3,7 @@ do NOT use GPIO.BCM
 do use GPIO.BOARD
 
 edits to settings.cfg:
+    
     * SWITCH_PIN = 12
     * LED_PIN = 23
 
