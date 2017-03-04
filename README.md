@@ -14,7 +14,7 @@ https://github.com/maduck/photobooth
 
 circuit layout
 --------------
-![fritzing diagram](https://i.imgur.com/k6NtYLG.png "yeah")
+![2 button circuit layout](https://i.imgur.com/DLzYnfP.png "yeah")
 
 notes:
 
