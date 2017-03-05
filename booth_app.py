@@ -158,7 +158,7 @@ class PhotoboothApp(object):
         photo_height = frame_height - 2 * photo_height_gap
 
         scaled_surface = pygame.transform.scale(photo_surface, (photo_width, photo_height))
-        frame_surface.blit(scaled_surface, (photo_width_gap, photo_height_gap))
+        frame_surface.blit(scaled_surface, (photo_width, photo_height))
 
         return frame_surface
 
@@ -236,7 +236,7 @@ class PhotoboothApp(object):
         print_surface = pygame.Surface((width, height))
         print_surface.fill(Colors.WHITE)
         #TODO: scale to instagram photo size & remove this for loop
-        for number, photo in enumerate(self.photos)
+        for number, photo in enumerate(self.photos):
             scaled_photo = pygame.transform.scale(photo, (int(width), int(height)))
             scaled_photo = pygame.transform.flip(scaled_photo, True, False)
             print_surface.blit(scaled_photo)
