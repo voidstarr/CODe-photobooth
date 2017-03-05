@@ -147,8 +147,6 @@ class PhotoboothApp(object):
         #frame_surface = pygame.Surface((photo_width, photo_height))
         #frame_surface.fill(Colors.WHITE)
 
-        print("load filename: %s" % photo_filename)
-        
         photo_surface = pygame.image.load(photo_filename)
         self.photos.append(photo_surface)
         #photo_width = frame_width - 2 * photo_width_gap
