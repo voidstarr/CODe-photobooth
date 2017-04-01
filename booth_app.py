@@ -114,36 +114,38 @@ class PhotoboothApp(object):
     def fill_photo_space(self):
         all_photos = pygame.Surface((self.screen_width, self.screen_height))
 
-        photo_filename = "images/sample-temp.png"
-        self.put_photo_on_surface(all_photos, photo_filename)
+        #photo_filename = "images/sample-temp.png"
+        #self.put_photo_on_surface(all_photos, photo_filename)
 
         all_photos.set_colorkey(Colors.BLACK)
         return all_photos
 
     def put_photo_on_surface(self, surface, filename):
-        gap_percentage = 5
-        width_gap = int(self.screen_width / 100 * gap_percentage)
-        height_gap = int(self.screen_height / 100 * gap_percentage)
+        #gap_percentage = 5
+        #width_gap = int(self.screen_width / 100 * gap_percentage)
+        #height_gap = int(self.screen_height / 100 * gap_percentage)
 
         #frame_width = int((self.screen_width - 3* width_gap) / 2)
         #frame_height = int((self.screen_height - 3 * height_gap) / 2)
 
-        frame_width = self.screen_width/2
-        frame_height = self.screen_height/2
-
         #frame_x = width_gap if number % 2 != 0 else (2 * width_gap + frame_width)
         #frame_y = height_gap if number <= 2 else (2 * height_gap + frame_height)
 
-        frame_x = self.screen_width/2  - frame_width/2
-        frame_y = self.screen_height/2  - frame_height/2
+        frame_x = 100
+        frame_y = 100
 
-        photo = self.load_and_scale_photo_for_display(filename)
+        photo = self.load_and_scale_photo_for_display(filename, 100, 100)
+
+        print("frame_x %d frame_y %d filename %s" % (frame_x, frame_y, filename))
 
         surface.blit(photo, (frame_x, frame_y))
 
-    def load_and_scale_photo_for_display(self, photo_filename):
-        photo_width = int((self.screen_width) / 2)
-        photo_height = int((self.screen_height) / 2)
+    def display_disclaimer(self):
+        self._photo_space = pygame.image.load("images/disclaimer.png")
+        self.redraw_background()
+        
+    def load_and_scale_photo_for_display(self, photo_filename, x, y, scale=True):
+        
         #frame_surface = pygame.Surface((photo_width, photo_height))
         #frame_surface.fill(Colors.WHITE)
 
@@ -151,24 +153,35 @@ class PhotoboothApp(object):
         self.photos.append(photo_surface)
         #photo_width = frame_width - 2 * photo_width_gap
         #photo_height = frame_height - 2 * photo_height_gap
-
-        scaled_surface = pygame.transform.scale(photo_surface, (photo_width, photo_height))
+        
+        if(scale):
+            photo_width = int(((self.screen_width) - 2*x))
+            photo_height = int(((self.screen_height) - 2*y))
+            print("photo_width: %d photo_height: %d" % (photo_width, photo_height))
+            return pygame.transform.scale(photo_surface, (photo_width, photo_height))
+        else:
+            return photo_surface
         #frame_surface.blit(scaled_surface, (photo_width, photo_height))
 
-        return scaled_surface
 
     def take_photo(self):
         self.redraw_background()
         #self.render_text("take %d photo %d" % (number, 4), Colors.BLACK)
         pygame.display.flip()
         time.sleep(2)
-        myWidth = 640
-        myHeight = 480
-        self.camera.preview_fullscreen = False
-        #self.camera.preview_window = ((self.screen_width)/2, (self.screen_height)/2, myWidth, myHeight)
-        self.camera.preview_window = (0,0, self.screen_width, self.screen_height)
-        self.camera.start_preview() #window = ((self.screen_width - myWidth)/2, (self.screen_height - myHeight)/2, myWidth, myHeight))
+
+        self.camera.start_preview()
+        
+        x = 100
+        y = 00
+        myWidth = self.screen_width - (2 * x)
+        myHeight = self.screen_height - (2 * y)
+        self.camera.preview.fullscreen = False
+        self.camera.preview.window = (x, y, myWidth, myHeight)
+        #self.camera.start_preview() #window = ((self.screen_width - myWidth)/2, (self.screen_height - myHeight)/2, myWidth, myHeight))
         #self.redraw_background(white_borders=True)
+        print(self.camera.preview.window)
+
         for count in range(self.config.getint("countdown_seconds"), 0, -1):
             self.camera.annotate_text = str(count)
             time.sleep(1)
@@ -224,7 +237,7 @@ class PhotoboothApp(object):
             self._canvas.blit(border_rect, (0, rect_height + photo_height))
         pygame.display.flip()
 
-    def render_and_save_printer_photo(self, photo_filename):
+    def render_and_save_photo(self, photo_filename):
         dpi = self.config.getfloat("printer_dpi")
         width = dpi * self.config.getfloat("printer_width_inch")
         height = dpi * self.config.getfloat("printer_height_inch")
@@ -235,6 +248,7 @@ class PhotoboothApp(object):
             scaled_photo = pygame.transform.scale(photo, (int(width), int(height)))
             scaled_photo = pygame.transform.flip(scaled_photo, True, False)
             print_surface.blit(scaled_photo,(0,0))
+        
         pygame.image.save(print_surface, photo_filename)
 
     def generate_photo_filename(self):
@@ -246,9 +260,10 @@ class PhotoboothApp(object):
         self.photos = []
         self.redraw_background()
         #TODO: disclaimer text
-        self.render_text(u"Welcome, blah blah blah", bg_color=Colors.ORANGE)
+        #self.render_text(u"Welcome, blah blah blah", bg_color=Colors.ORANGE)
         pygame.display.flip()
         self.enable_led(True)
+        self.display_disclaimer()
         self.wait_for_button()
         self.enable_led(False)
 
@@ -257,7 +272,7 @@ class PhotoboothApp(object):
         self.render_text(u"Thanks.. Outputting to blah ", bg_color=Colors.ORANGE)
         pygame.display.flip()
         photo_filename = self.generate_photo_filename()
-        self.render_and_save_printer_photo(photo_filename)
+        self.render_and_save_photo(photo_filename)
         #self.printer.export(photo_filename)
         self.photos = []
 
