@@ -141,9 +141,9 @@ class PhotoboothApp(object):
         surface.blit(photo, (frame_x, frame_y))
 
     def display_disclaimer(self):
-        self._photo_space = pygame.image.load("images/disclaimer.png")
+        self._photo_space = pygame.image.load("images/disclaimer.jpg")
         self.redraw_background()
-        
+    
     def load_and_scale_photo_for_display(self, photo_filename, x, y, scale=True):
         
         #frame_surface = pygame.Surface((photo_width, photo_height))
@@ -165,15 +165,15 @@ class PhotoboothApp(object):
 
 
     def take_photo(self):
+        time.sleep(1)
+        self._photo_space = pygame.image.load("images/live_bg.jpg")
         self.redraw_background()
-        #self.render_text("take %d photo %d" % (number, 4), Colors.BLACK)
         pygame.display.flip()
-        time.sleep(2)
 
         self.camera.start_preview()
         
-        x = 100
-        y = 00
+        x = 40
+        y = 0
         myWidth = self.screen_width - (2 * x)
         myHeight = self.screen_height - (2 * y)
         self.camera.preview.fullscreen = False
@@ -190,6 +190,9 @@ class PhotoboothApp(object):
         photo_filename = '%s/photobooth-temp.jpg' % (self.config.get("TEMP_DIR"))
         self.camera.capture(photo_filename)
         self.camera.stop_preview()
+        self._photo_space = pygame.image.load("images/farewell.jpg")
+        self.redraw_background()
+
         self.put_photo_on_surface(self._photo_space, photo_filename)
 
     def parse_events(self):
@@ -269,7 +272,10 @@ class PhotoboothApp(object):
 
     def stage_farewell(self):
         time.sleep(2)
-        self.render_text(u"Thanks.. Outputting to blah ", bg_color=Colors.ORANGE)
+        self.render_text(u"Thanks! Sending to IG..", bg_color=Colors.RED)
+        #self._photo_space = pygame.image.load("images/farewell.jpg")
+        #self.redraw_background()
+
         pygame.display.flip()
         photo_filename = self.generate_photo_filename()
         self.render_and_save_photo(photo_filename)
