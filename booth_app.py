@@ -131,10 +131,10 @@ class PhotoboothApp(object):
         #frame_x = width_gap if number % 2 != 0 else (2 * width_gap + frame_width)
         #frame_y = height_gap if number <= 2 else (2 * height_gap + frame_height)
 
-        frame_x = 100
-        frame_y = 100
+        frame_x = 10
+        frame_y = 60
 
-        photo = self.load_and_scale_photo_for_display(filename, 100, 100)
+        photo = self.load_and_scale_photo_for_display(filename, 10, 62)
 
         print("frame_x %d frame_y %d filename %s" % (frame_x, frame_y, filename))
 
@@ -180,7 +180,7 @@ class PhotoboothApp(object):
         self.camera.preview.window = (x, y, myWidth, myHeight)
         #self.camera.start_preview() #window = ((self.screen_width - myWidth)/2, (self.screen_height - myHeight)/2, myWidth, myHeight))
         #self.redraw_background(white_borders=True)
-        print(self.camera.preview.window)
+        #print(self.camera.preview.window)
 
         for count in range(self.config.getint("countdown_seconds"), 0, -1):
             self.camera.annotate_text = str(count)
@@ -218,7 +218,7 @@ class PhotoboothApp(object):
         background_width = overall_width * (100 + top_and_bottom_margin_percentage) / 100
         background_height = overall_height * (100 + top_and_bottom_margin_percentage) / 100
         x = (self.screen_width - background_width) / 2
-        y = 0 # (self.screen_height - background_height) / 6
+        y = 80 # (self.screen_height - background_height) / 6
         rounded_rect(self._canvas, (x, y, background_width, background_height), bg_color, radius=0.2)
         text_margin_percentage = top_and_bottom_margin_percentage / 2
         start_height = y + text_margin_percentage * overall_height / 100
@@ -272,7 +272,8 @@ class PhotoboothApp(object):
 
     def stage_farewell(self):
         time.sleep(2)
-        self.render_text(u"Thanks! Sending to IG..", bg_color=Colors.RED)
+        self.render_text(u"Thanks! Sending to IG..", bg_color=(0xcc, 0, 0))
+        print(Colors.RED)
         #self._photo_space = pygame.image.load("images/farewell.jpg")
         #self.redraw_background()
 
