@@ -9,13 +9,21 @@ import RPi.GPIO as GPIO
 import picamera
 import pygame
 
-import backends
+from backends.twitter import Twitter
 from libs.config import Config
 from libs.gui import rounded_rect, Colors
 
 
 class PhotoboothApp(object):
-    config = Config()
+    config = Config("settings.cfg", "photobooth")
+    config_twitter = Config("twitter.token", "twitter")
+
+    twit = Twitter(
+                    config_twitter.get("consumer_key"),
+                    config_twitter.get("consumer_secret"),
+                    config_twitter.get("access_token"),
+                    config_twitter.get("access_token_secret")
+                  )
 
     def __init__(self):
         self.runtime_id = 0
@@ -272,7 +280,7 @@ class PhotoboothApp(object):
 
     def stage_farewell(self):
         time.sleep(2)
-        self.render_text(u"Thanks! Sending to IG..", bg_color=(0xcc, 0, 0))
+        self.render_text(u"Thanks! Sending to Twitter!\nFollow @CODeClub2", bg_color=(0xcc, 0, 0))
         print(Colors.RED)
         #self._photo_space = pygame.image.load("images/farewell.jpg")
         #self.redraw_background()
@@ -280,6 +288,7 @@ class PhotoboothApp(object):
         pygame.display.flip()
         photo_filename = self.generate_photo_filename()
         self.render_and_save_photo(photo_filename)
+        self.twit.post_photo(photo_filename, "yay!")
         #self.printer.export(photo_filename)
         self.photos = []
 

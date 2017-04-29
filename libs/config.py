@@ -2,10 +2,10 @@ import ConfigParser
 
 
 class Config(object):
-    config_file = "settings.cfg"
-    section = "photobooth"
 
-    def __init__(self):
+    def __init__(self, config_file, section):
+        self.section = section
+        self.config_file = config_file
         self.config = ConfigParser.ConfigParser()
         self.config.read(self.config_file)
 
