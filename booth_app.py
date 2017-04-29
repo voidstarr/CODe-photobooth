@@ -288,7 +288,7 @@ class PhotoboothApp(object):
         pygame.display.flip()
         photo_filename = self.generate_photo_filename()
         self.render_and_save_photo(photo_filename)
-        self.twit.post_photo(photo_filename, "yay!")
+        self.twit.post_photo(photo_filename, "Posted from CODe Photo Booth #CODePalmDesert")
         #self.printer.export(photo_filename)
         self.photos = []
 
