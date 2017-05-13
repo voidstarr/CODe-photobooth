@@ -13,7 +13,6 @@ from backends.twitter import Twitter
 from libs.config import Config
 from libs.gui import rounded_rect, Colors
 
-
 class PhotoboothApp(object):
     config = Config("settings.cfg", "photobooth")
     config_twitter = Config("twitter.token", "twitter")
@@ -32,6 +31,7 @@ class PhotoboothApp(object):
         self._photo_space = None
         self.target_dir = None
         self.font = None
+        self.overlay_font = None
         self._init_camera()
         self.photos = [] #TODO: remove this
         #self.printer = backends.acquire_backend("output", "line_printer", self.config)
@@ -50,6 +50,7 @@ class PhotoboothApp(object):
         self._photo_space = self.fill_photo_space()
         self._running = True
         self.font = pygame.font.Font(self.config.get('font_filename'), self.config.getint('font_size'))
+        self.overlay_font = pygame.font.Font(self.config.get('overlay_font_filename'), self.config.getint('overlay_font_size'))
         pygame.mouse.set_visible(False)
 
     def _get_last_runtime_id(self):
@@ -97,7 +98,7 @@ class PhotoboothApp(object):
         self.camera.annotate_text_size = 128
         self.camera.led = False
         self.camera.vflip = False
-        self.camera.resolution = (self.config.getint("picture_width"), self.config.getint("picture_height"))
+        self.camera.resolution = (self.config.getint("camera_resolution_w"), self.config.getint("camera_resolution_h"))
 
     def enable_led(self, mode):
         GPIO.output(self.config.getint("LED_PIN"), int(not mode))
@@ -144,8 +145,6 @@ class PhotoboothApp(object):
 
         photo = self.load_and_scale_photo_for_display(filename, 10, 62)
 
-        print("frame_x %d frame_y %d filename %s" % (frame_x, frame_y, filename))
-
         surface.blit(photo, (frame_x, frame_y))
 
     def display_disclaimer(self):
@@ -156,7 +155,6 @@ class PhotoboothApp(object):
         
         #frame_surface = pygame.Surface((photo_width, photo_height))
         #frame_surface.fill(Colors.WHITE)
-
         photo_surface = pygame.image.load(photo_filename)
         self.photos.append(photo_surface)
         #photo_width = frame_width - 2 * photo_width_gap
@@ -165,7 +163,6 @@ class PhotoboothApp(object):
         if(scale):
             photo_width = int(((self.screen_width) - 2*x))
             photo_height = int(((self.screen_height) - 2*y))
-            print("photo_width: %d photo_height: %d" % (photo_width, photo_height))
             return pygame.transform.scale(photo_surface, (photo_width, photo_height))
         else:
             return photo_surface
@@ -180,7 +177,7 @@ class PhotoboothApp(object):
 
         self.camera.start_preview()
         
-        x = 40
+        x = 0
         y = 0
         myWidth = self.screen_width - (2 * x)
         myHeight = self.screen_height - (2 * y)
@@ -255,11 +252,33 @@ class PhotoboothApp(object):
         print_surface = pygame.Surface((width, height))
         print_surface.fill(Colors.WHITE)
         #TODO: scale to instagram photo size & remove this for loop
-        for number, photo in enumerate(self.photos):
-            scaled_photo = pygame.transform.scale(photo, (int(width), int(height)))
-            scaled_photo = pygame.transform.flip(scaled_photo, True, False)
-            print_surface.blit(scaled_photo,(0,0))
+        #for number, photo in enumerate(self.photos):
+        scaled_photo = pygame.transform.scale(self.photos[0], (int(width), int(height)))
+        print_surface.blit(scaled_photo,(0,0))
         
+        if(self.config.getboolean("overlay_text")):
+            overall_width = 0
+            overall_height = 0
+            text = "Congratulations,\nClass of 2017!"
+            text_lines = []
+            for line in text.split('\n'):
+                overall_width = max(overall_width, self.overlay_font.size(line)[0])
+                overall_height += self.overlay_font.size(line)[1]
+                text_lines.append(self.overlay_font.render(line, True, Colors.COD_YELLOW))
+    
+            top_and_bottom_margin_percentage = 8
+            background_width = overall_width * (100 + top_and_bottom_margin_percentage) / 100
+            background_height = overall_height * (100 + top_and_bottom_margin_percentage) / 100
+            x = (width - background_width) / 2
+            y = (height - background_height) - 20
+            rounded_rect(print_surface, (x, y, background_width, background_height), Colors.COD_RED, radius=0.2)
+            text_margin_percentage = top_and_bottom_margin_percentage - 5
+            start_height = y + text_margin_percentage * overall_height / 100
+            for i, line in enumerate(text_lines):
+                label_x = (width - line.get_width()) / 2
+                label_y = start_height + i * line.get_height()
+                print_surface.blit(line, (label_x, label_y))
+
         pygame.image.save(print_surface, photo_filename)
 
     def generate_photo_filename(self):
@@ -288,11 +307,13 @@ class PhotoboothApp(object):
         pygame.display.flip()
         photo_filename = self.generate_photo_filename()
         self.render_and_save_photo(photo_filename)
-        self.twit.post_photo(photo_filename, "Posted from CODe Photo Booth #CODePalmDesert")
+        
+        if (not self.config.getboolean("DEBUG_MODE")):
+            self.twit.post_photo(photo_filename, "Posted from CODe Photo Booth #CODePalmDesert")
+
         #self.printer.export(photo_filename)
         self.photos = []
 
-        time.sleep(10)
         self._photo_space = self.fill_photo_space()
 
     def stage_photos(self):

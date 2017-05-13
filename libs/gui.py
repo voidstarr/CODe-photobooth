@@ -8,7 +8,10 @@ class Colors(object):
 
     ORANGE = (200, 50, 20)
     DARK_GRAY = (1, 1, 1)
-
+    COD_BLUE = (59, 170, 227)
+    COD_YELLOW = (255, 215, 67)
+    COD_GREEN = (163, 206, 54)
+    COD_RED = (204, 0, 0)
 
 def rounded_rect(surface, rect, color, radius=0.4):
     """
